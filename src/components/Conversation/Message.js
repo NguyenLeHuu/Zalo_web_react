@@ -4,6 +4,7 @@ import {
   FetchChatArr,
   FetchChatGroupArr,
   removeMessage,
+  sendReplyMessage
 } from "../../redux/slices/app";
 import { useDispatch, useSelector } from "react-redux";
 import { ArrowArcRight, Trash } from "phosphor-react";
@@ -17,13 +18,14 @@ const Message = ({ menu }) => {
   const { ChatArr, ChatGroupArr } = useSelector((state) => state.app);
 
   useEffect(() => {
-    // dispatch(FetchChatArr());
-    // dispatch(FetchChatGroupArr());
+    dispatch(FetchChatArr());
+    dispatch(FetchChatGroupArr());
   }, [dispatch]);
-  useEffect(() => {}, [ChatGroupArr]);
+
   useEffect(() => {
-    console.log("arr :", ChatArr);
-  }, [ChatArr]);
+    console.log("Tin nhắn group :", ChatGroupArr);
+  }, [ChatGroupArr]);
+
   let Msg = <></>;
   if (ChatArr != null) {
     Msg = (
@@ -128,6 +130,12 @@ const Message = ({ menu }) => {
                 alignItems="center"
                 justifyContent={isSentByUser ? "flex-end" : "flex-start"}
               >
+                <Box>
+                {!isSentByUser &&
+                  <Box style={{marginBottom: 5}}>
+                    Lê Hữu
+                  </Box>
+                }
                 <Box
                   display="flex"
                   flexDirection={isSentByUser ? "row" : "row-reverse"}
@@ -137,15 +145,16 @@ const Message = ({ menu }) => {
                       onMouseEnter={() => setIconButtonHovered(true)}
                       onMouseLeave={() => setIconButtonHovered(false)}
                     >
-                      <IconButton>
-                        <ArrowArcRight size={20} />
+                      <IconButton
+                        onClick={()=> dispatch(sendReplyMessage({ message:  `${el.file && "[Hình ảnh]"} ${el.text}`}))}>
+                        <ArrowArcRight size={22} />
                       </IconButton>
                       <IconButton
                         onClick={() =>
                           dispatch(removeMessage(el._id, ChatGroupArr._id))
                         }
                       >
-                        <Trash size={20} />
+                        <Trash size={22} />
                       </IconButton>
                     </Box>
                   )}
@@ -178,7 +187,7 @@ const Message = ({ menu }) => {
                           marginBottom: el.file ? 10 : "auto",
                         }}
                       >
-                        {el.text}
+                        {el.text}  
                       </Typography>
                       <Box
                         display="flex"
@@ -196,6 +205,7 @@ const Message = ({ menu }) => {
                       </Box>
                     </Box>
                   </Box>
+                </Box>
                 </Box>
               </Box>
             );

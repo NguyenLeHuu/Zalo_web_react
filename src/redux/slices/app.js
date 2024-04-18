@@ -21,6 +21,7 @@ const initialState = {
   friendRequests: [],
   chat_type: null,
   room_id: null,
+  reply_message: "",
 };
 
 const slice = createSlice({
@@ -74,6 +75,9 @@ const slice = createSlice({
     logout(state, action) {
       state = {};
     },
+    sendReplyMessage(state, action) {
+      state.reply_message = action.payload.message;
+    },
   },
 });
 
@@ -91,6 +95,18 @@ export function updateSidebarType(type) {
     dispatch(slice.actions.updateSidebarType({ type }));
   };
 }
+
+export function sendReplyMessage(message) {
+  return async (dispatch, getState) => {
+    dispatch(slice.actions.sendReplyMessage({ message }));
+  };
+}
+
+export const clearReplyMessage = () => {
+  return async (dispatch, getState) => {
+    dispatch(slice.actions.sendReplyMessage(""));
+  };
+};
 export const showSnackbar =
   ({ severity, message }) =>
   async (dispatch, getState) => {

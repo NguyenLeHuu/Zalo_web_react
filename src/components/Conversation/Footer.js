@@ -23,7 +23,10 @@ import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import axios from "../../utils/axios";
 import { useDispatch, useSelector } from "react-redux";
-
+import { XCircle } from "phosphor-react";
+import {
+  clearReplyMessage
+} from "../../redux/slices/app";
 const StyledInput = styled(TextField)(({ theme }) => ({
   "& .MuiInputBase-input": {
     // padingTop: "12px !important",
@@ -84,6 +87,7 @@ const ChatInput = ({
         })
         .then((response) => {
           console.log("send thanh cong")
+          setMessageContent("")
         })
         .catch((error) => {
           console.log("error :", error);
@@ -136,9 +140,12 @@ const ChatInput = ({
 };
 
 const Footer = () => {
+  const dispatch = useDispatch();
+
   const theme = useTheme();
   const [openPicker, setOpenPicker] = React.useState(false);
   const [messageContent, setMessageContent] = React.useState("");
+  const { reply_message } = useSelector((state) => state.app);
 
   return (
     <Box
@@ -148,6 +155,20 @@ const Footer = () => {
         borderTop: '1px solid #d9d9d9'
       }}
     >
+      {reply_message && 
+      <Box
+        style={{padding: 20}}
+        >
+          <Box style={{display: 'flex',justifyContent: 'space-between'}}>
+            Đang trả lời cho tin nhắn
+            <IconButton
+            onClick={()=>dispatch(clearReplyMessage())}>
+            <XCircle size={22} />
+          </IconButton>
+          </Box>
+          <h4>{reply_message.message}</h4>
+      </Box>
+      }
       <Stack direction={"row"} alignItems={"center"} spacing={1}>
         <IconButton>
           <Sticker />
