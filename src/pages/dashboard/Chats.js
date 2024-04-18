@@ -6,6 +6,8 @@ import {
   Button,
   Typography,
   IconButton,
+  Modal,
+  TextField,
 } from "@mui/material";
 import { MagnifyingGlass, UserPlus, UsersThree } from "phosphor-react";
 import { SimpleBarStyle } from "../../components/Scrollbar";
@@ -24,12 +26,27 @@ import {
   FetchChatGroupArr1,
 } from "../../redux/slices/app";
 import Message from "../../components/Conversation/Message";
+import axios from "../../utils/axios";
 import { useSelector, useDispatch } from "react-redux";
 
 const user_id = window.localStorage.getItem("user_id");
 
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  bgcolor: "background.paper",
+  boxShadow: 24,
+  p: 4,
+  borderRadius: 2,
+};
+
 const Chats = () => {
   const [openDialog, setOpenDialog] = React.useState(false);
+  const [openModalAddGroup, setOpenModalAddGroup] = React.useState(false);
+  const [textAddGroup, setTextAddGroup] = React.useState(false);
 
   const { conversations } = useSelector(
     (state) => state.conversation.direct_chat
@@ -58,6 +75,30 @@ const Chats = () => {
 
   const handleGroupClick = (group) => {
     dispatch(FetchChatGroupArr1(group._id));
+  };
+
+  const addNewGroup = async ()  =>  {
+    await axios
+      .post(`/groupchat/`,           
+      {
+        admin: user_id,
+        groupName: textAddGroup
+      }, 
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer `,
+        },
+      })
+      .then((response) => {
+        console.log("Thêm group mới thành công")
+        setTextAddGroup("")
+        setOpenModalAddGroup(false);
+        dispatch(FetchGroups());
+      })
+      .catch((error) => {
+        console.log("error :", error);
+      });
   };
 
   return (
@@ -97,7 +138,11 @@ const Chats = () => {
               <UserPlus size={20} />
             </IconButton>
             <Stack>
-              <UsersThree size={20} />
+            <IconButton
+            onClick={() => setOpenModalAddGroup(true)}
+            >
+              <UsersThree size={25} />
+              </IconButton>
             </Stack>
           </Stack>
           <Stack direction={"row"}>
@@ -121,7 +166,7 @@ const Chats = () => {
                 })}
               </Stack> */}
               <Stack spacing={1}>
-                Bạn bè
+              <h4>Bạn bè</h4>
                 {/* Hiển thị danh sách bạn bè */}
                 {friends?.map((friend) => (
                   <Box
@@ -158,7 +203,9 @@ const Chats = () => {
                   </Box>
                 ))}
                 {/* Hiển thị danh sách nhóm */}
-                Nhóm
+                <Box style={{marginTop: 20}}>
+
+                <h4>Nhóm</h4>
                 {groups?.map((group) => (
                   <Box
                     key={group.id}
@@ -177,14 +224,16 @@ const Chats = () => {
                     <img
                       src={
                         group?.img ||
-                        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRoUa4M4mUfPrppnaFXF2PqbPYEtJChf1wBCw&s"
+                        'https://cdn-icons-png.flaticon.com/512/6387/6387947.png'
                       }
                       alt="Avatar"
                       style={{
                         width: "40px",
                         height: "40px",
                         borderRadius: "50%",
+                        objectFit: 'contain'
                       }}
+                      
                     />
                     <Typography
                       variant="subtitle2"
@@ -194,11 +243,45 @@ const Chats = () => {
                     </Typography>
                   </Box>
                 ))}
+                </Box>
               </Stack>
             </SimpleBarStyle>
           </Stack>
         </Stack>
       </Box>
+      <Modal
+        open={openModalAddGroup}
+        onClose={() => setOpenModalAddGroup(false)}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            Tạo nhóm
+          </Typography>
+          <Box
+            component="form"
+            sx={{
+              "& > :not(style)": { m: 1, width: "25ch" },
+            }}
+            noValidate
+            autoComplete="off"
+          >
+            <TextField
+              id="standard-basic"
+              label="Nhập tên nhóm..."
+              variant="standard"
+              onChange={(e) => setTextAddGroup(e.target.value)}
+            />
+          </Box>
+          <Box style={{marginTop: 20}}>
+          <Stack spacing={2} direction="row" justifyContent={'flex-end'}>
+            <Button variant="text" onClick={()=>setOpenModalAddGroup(false)}>Hủy</Button>
+            <Button variant="contained" onClick={addNewGroup}>Tạo nhóm</Button>
+          </Stack>
+          </Box>
+        </Box>
+      </Modal>
       {openDialog && (
         <Friends open={openDialog} handleClose={handleCloseDialog} />
       )}

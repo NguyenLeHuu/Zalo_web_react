@@ -8,7 +8,7 @@ import {
   Typography,
   IconButton,
 } from "@mui/material";
-import { Chat } from "phosphor-react";
+import { Chat, PlusCircle  } from "phosphor-react";
 
 import StyledBadge from "./StyledBadge";
 import { socket } from "../socket";
@@ -127,9 +127,11 @@ const FriendRequestsComponent = ({
   );
 };
 
-const FriendComponent = ({ firstName, lastName, _id, online, img }) => {
+const FriendComponent = ({ firstName, lastName, _id, online, img, purpose }) => {
   const theme = useTheme();
   const name = `${firstName} ${lastName}`;
+  
+ 
 
   return (
     <StyledChatBox
@@ -152,16 +154,24 @@ const FriendComponent = ({ firstName, lastName, _id, online, img }) => {
               anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
               variant="dot"
             >
-              <Avatar alt={name} src={img} />
+              <Avatar alt={name} src={img || "https://cdn-icons-png.flaticon.com/512/9187/9187604.png"} />
             </StyledBadge>
           ) : (
-            <Avatar alt={name} src={img} />
+            <Avatar alt={name} src={img || "https://cdn-icons-png.flaticon.com/512/9187/9187604.png"} />
           )}
           <Stack spacing={0.3}>
             <Typography variant="subtitle2">{name}</Typography>
           </Stack>
         </Stack>
         <Stack direction={"row"} spacing={2} alignItems={"center"}>
+          {purpose === 'addToGroup' ?
+              <IconButton
+                onClick={() => {
+                  }}
+              >
+                 <PlusCircle />
+              </IconButton>
+          :
           <IconButton
             onClick={() => {
               // start a new conversation
@@ -169,6 +179,7 @@ const FriendComponent = ({ firstName, lastName, _id, online, img }) => {
           >
             <Chat />
           </IconButton>
+          }
         </Stack>
       </Stack>
     </StyledChatBox>
