@@ -4,7 +4,7 @@ import {
   FetchChatArr,
   FetchChatGroupArr,
   removeMessage,
-  sendReplyMessage
+  sendReplyMessage,
 } from "../../redux/slices/app";
 import { useDispatch, useSelector } from "react-redux";
 import { ArrowArcRight, Trash } from "phosphor-react";
@@ -131,81 +131,88 @@ const Message = ({ menu }) => {
                 justifyContent={isSentByUser ? "flex-end" : "flex-start"}
               >
                 <Box>
-                {!isSentByUser &&
-                  <Box style={{marginBottom: 5}}>
-                    Lê Hữu
-                  </Box>
-                }
-                <Box
-                  display="flex"
-                  flexDirection={isSentByUser ? "row" : "row-reverse"}
-                >
-                  {hoveredIndex === index && (
-                    <Box
-                      onMouseEnter={() => setIconButtonHovered(true)}
-                      onMouseLeave={() => setIconButtonHovered(false)}
-                    >
-                      <IconButton
-                        onClick={()=> dispatch(sendReplyMessage({ message:  `${el.file && "[Hình ảnh]"} ${el.text}`}))}>
-                        <ArrowArcRight size={22} />
-                      </IconButton>
-                      <IconButton
-                        onClick={() =>
-                          dispatch(removeMessage(el._id, ChatGroupArr._id))
-                        }
-                      >
-                        <Trash size={22} />
-                      </IconButton>
-                    </Box>
+                  {!isSentByUser && (
+                    <Box style={{ marginBottom: 5 }}>{el.sender}</Box>
                   )}
                   <Box
-                    p={1}
-                    borderRadius={el.file ? 1 : 1}
-                    bgcolor={isSentByUser ? "rgb(214 231 249)" : "#ffffff"}
-                    style={{ cursor: "pointer" }}
-                    onMouseEnter={() => setHoveredIndex(index)}
-                    onMouseLeave={() => {
-                      if (!iconButtonHovered) {
-                        setHoveredIndex(null);
-                      }
-                    }}
+                    display="flex"
+                    flexDirection={isSentByUser ? "row" : "row-reverse"}
                   >
-                    <Box display="flex" flexDirection="column">
-                      <Typography
-                        variant="body2"
-                        style={{
-                          marginLeft: el.file
-                            ? isSentByUser
-                              ? "auto"
-                              : "0px"
-                            : "10px",
-                          marginRight: el.file
-                            ? isSentByUser
-                              ? "10px"
-                              : "auto"
-                            : "10px",
-                          marginBottom: el.file ? 10 : "auto",
-                        }}
-                      >
-                        {el.text}  
-                      </Typography>
+                    {hoveredIndex === index && (
                       <Box
-                        display="flex"
-                        alignItems="center"
-                        flexDirection="column"
-                        borderRadius={1}
+                        onMouseEnter={() => setIconButtonHovered(true)}
+                        onMouseLeave={() => setIconButtonHovered(false)}
                       >
-                        {el.file && (
-                          <img
-                            src={el.file}
-                            alt="File"
-                            style={{ maxWidth: "100%" }}
-                          />
-                        )}
+                        <IconButton
+                          onClick={() =>
+                            dispatch(
+                              sendReplyMessage({
+                                message: `${el.file && "[Hình ảnh]"} ${
+                                  el.text
+                                }`,
+                              })
+                            )
+                          }
+                        >
+                          <ArrowArcRight size={22} />
+                        </IconButton>
+                        <IconButton
+                          onClick={() =>
+                            dispatch(removeMessage(el._id, ChatGroupArr._id))
+                          }
+                        >
+                          <Trash size={22} />
+                        </IconButton>
+                      </Box>
+                    )}
+                    <Box
+                      p={1}
+                      borderRadius={el.file ? 1 : 1}
+                      bgcolor={isSentByUser ? "rgb(214 231 249)" : "#ffffff"}
+                      style={{ cursor: "pointer" }}
+                      onMouseEnter={() => setHoveredIndex(index)}
+                      onMouseLeave={() => {
+                        if (!iconButtonHovered) {
+                          setHoveredIndex(null);
+                        }
+                      }}
+                    >
+                      <Box display="flex" flexDirection="column">
+                        <Typography
+                          variant="body2"
+                          style={{
+                            marginLeft: el.file
+                              ? isSentByUser
+                                ? "auto"
+                                : "0px"
+                              : "10px",
+                            marginRight: el.file
+                              ? isSentByUser
+                                ? "10px"
+                                : "auto"
+                              : "10px",
+                            marginBottom: el.file ? 10 : "auto",
+                          }}
+                        >
+                          {el.text}
+                        </Typography>
+                        <Box
+                          display="flex"
+                          alignItems="center"
+                          flexDirection="column"
+                          borderRadius={1}
+                        >
+                          {el.file && (
+                            <img
+                              src={el.file}
+                              alt="File"
+                              style={{ maxWidth: "100%" }}
+                            />
+                          )}
+                        </Box>
                       </Box>
                     </Box>
                   </Box>
-                </Box>
                 </Box>
               </Box>
             );
