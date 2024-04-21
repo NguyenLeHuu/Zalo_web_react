@@ -4,7 +4,7 @@ import {
   FetchChatArr,
   FetchChatGroupArr,
   removeMessage,
-  sendReplyMessage
+  sendReplyMessage,
 } from "../../redux/slices/app";
 import { useDispatch, useSelector } from "react-redux";
 import { ArrowArcRight, Trash } from "phosphor-react";
@@ -239,7 +239,7 @@ const Message = ({ menu }) => {
                   </Box>
                   </Box>
                 </Box>
-                </Box>
+              </Box>
               </Box>
             );
           })}
