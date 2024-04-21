@@ -34,7 +34,7 @@ const GeneralApp = () => {
           >
             <NoChatSVG />
             <Typography variant="subtitle2">
-              Select a conversation to start chatting
+              Chọn một cuộc hội thoại để bắt đầu trò truyện
             </Typography>
           </Stack>
         )}

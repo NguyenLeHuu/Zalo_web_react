@@ -19,7 +19,7 @@ const Message = ({ menu }) => {
 
   useEffect(() => {
     dispatch(FetchChatArr());
-    dispatch(FetchChatGroupArr());
+    // dispatch(FetchChatGroupArr());
   }, [dispatch]);
 
   useEffect(() => {
@@ -133,20 +133,32 @@ const Message = ({ menu }) => {
                 <Box>
                 {!isSentByUser &&
                   <Box style={{marginBottom: 5}}>
-                    Lê Hữu
+                    {ChatGroupArr.members.map((item)=> 
+                    {
+                      if (item._id === el.sender) {
+                        return (
+                          <span key={index}>
+                            {item.firstName} {item.lastName}
+                          </span>
+                        );
+                      }
+                      return null;
+                    }
+                    )}
                   </Box>
                 }
                 <Box
                   display="flex"
                   flexDirection={isSentByUser ? "row" : "row-reverse"}
+                  justifyContent={"flex-end"}
                 >
-                  {hoveredIndex === index && (
+                  {!el.isRemove && hoveredIndex === index && (
                     <Box
                       onMouseEnter={() => setIconButtonHovered(true)}
                       onMouseLeave={() => setIconButtonHovered(false)}
                     >
                       <IconButton
-                        onClick={()=> dispatch(sendReplyMessage({ message:  `${el.file && "[Hình ảnh]"} ${el.text}`}))}>
+                        onClick={()=> dispatch(sendReplyMessage({ message:  `${el.file ? "[Hình ảnh]" : ""}${el.text}`}))}>
                         <ArrowArcRight size={22} />
                       </IconButton>
                       <IconButton
@@ -159,10 +171,28 @@ const Message = ({ menu }) => {
                     </Box>
                   )}
                   <Box
+                   style={{display: 'flex'}}
+                   flexDirection={'column'}
+                   >
+                  {el.replyToTxt &&
+                    <Box
+                    p={1}
+                    borderRadius={1}
+                    bgcolor={"#e5e5e5"}
+                    style={{paddingBottom: 20, marginBottom: -10, alignSelf: isSentByUser ? 'flex-end' : 'flex-start'
+                  }}
+                    >
+                  <Typography
+                  style={{color: '#727272'}}>
+                    {el.replyToTxt}
+                  </Typography>
+                  </Box>
+                  }
+                  <Box
                     p={1}
                     borderRadius={el.file ? 1 : 1}
                     bgcolor={isSentByUser ? "rgb(214 231 249)" : "#ffffff"}
-                    style={{ cursor: "pointer" }}
+                    style={{ cursor: "pointer", alignSelf: isSentByUser ? 'flex-end' : 'flex-start'}}
                     onMouseEnter={() => setHoveredIndex(index)}
                     onMouseLeave={() => {
                       if (!iconButtonHovered) {
@@ -185,25 +215,28 @@ const Message = ({ menu }) => {
                               : "auto"
                             : "10px",
                           marginBottom: el.file ? 10 : "auto",
+                          color: el.isRemove ? 'grey' : 'black',
+                          fontStyle: el.isRemove && 'italic'
                         }}
                       >
-                        {el.text}  
+                        {el.isRemove ? 'Tin nhắn đã bị thu hồi': el.text}
                       </Typography>
                       <Box
                         display="flex"
                         alignItems="center"
                         flexDirection="column"
-                        borderRadius={1}
+                        borderRadius={5}
                       >
                         {el.file && (
                           <img
                             src={el.file}
                             alt="File"
-                            style={{ maxWidth: "100%" }}
+                            style={{ maxWidth: "50vh", borderRadius: 5 }}
                           />
                         )}
                       </Box>
                     </Box>
+                  </Box>
                   </Box>
                 </Box>
                 </Box>

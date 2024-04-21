@@ -8,7 +8,7 @@ import {
   Typography,
   IconButton,
 } from "@mui/material";
-import { Chat, PlusCircle  } from "phosphor-react";
+import { Chat, PlusCircle, MinusCircle  } from "phosphor-react";
 
 import StyledBadge from "./StyledBadge";
 import { socket } from "../socket";
@@ -127,7 +127,7 @@ const FriendRequestsComponent = ({
   );
 };
 
-const FriendComponent = ({ firstName, lastName, _id, online, img, purpose }) => {
+const FriendComponent = ({ firstName, lastName, _id, online, img, purpose, onPressButton }) => {
   const theme = useTheme();
   const name = `${firstName} ${lastName}`;
   
@@ -166,8 +166,7 @@ const FriendComponent = ({ firstName, lastName, _id, online, img, purpose }) => 
         <Stack direction={"row"} spacing={2} alignItems={"center"}>
           {purpose === 'addToGroup' ?
               <IconButton
-                onClick={() => {
-                  }}
+                onClick={onPressButton}
               >
                  <PlusCircle />
               </IconButton>
@@ -186,4 +185,54 @@ const FriendComponent = ({ firstName, lastName, _id, online, img, purpose }) => 
   );
 };
 
-export { UserComponent, FriendRequestsComponent, FriendComponent };
+const GroupListComponent = ({ firstName, lastName, _id, online, img }) => {
+  const theme = useTheme();
+  const name = `${firstName} ${lastName}`;
+  
+ 
+
+  return (
+    <StyledChatBox
+      sx={{
+        width: "100%",
+        borderRadius: 1,
+        backgroundColor: theme.palette.background.paper,
+      }}
+      p={2}
+    >
+      <Stack
+        direction={"row"}
+        alignItems={"center"}
+        justifyContent={"space-between"}
+      >
+        <Stack direction={"row"} alignItems={"center"} spacing={2}>
+          {online ? (
+            <StyledBadge
+              overlap="circular"
+              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+              variant="dot"
+            >
+              <Avatar alt={name} src={img || "https://cdn-icons-png.flaticon.com/512/9187/9187604.png"} />
+            </StyledBadge>
+          ) : (
+            <Avatar alt={name} src={img || "https://cdn-icons-png.flaticon.com/512/9187/9187604.png"} />
+          )}
+          <Stack spacing={0.3}>
+            <Typography variant="subtitle2">{name}</Typography>
+          </Stack>
+        </Stack>
+        <Stack direction={"row"} spacing={2} alignItems={"center"}>
+              <IconButton
+                onClick={() => {
+                  }}
+              >
+                 <MinusCircle  />
+              </IconButton>
+    
+        </Stack>
+      </Stack>
+    </StyledChatBox>
+  );
+};
+
+export { UserComponent, FriendRequestsComponent, FriendComponent, GroupListComponent };

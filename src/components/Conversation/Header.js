@@ -8,27 +8,32 @@ import {
   Modal,
   TextField,
   Button,
+  Snackbar,
+  Alert
 } from "@mui/material";
 import { faker } from "@faker-js/faker";
 import {
   MagnifyingGlass,
   SidebarSimple,
-  UsersThree,
+  UserCirclePlus ,
+  Users,
   VideoCamera,
 } from "phosphor-react";
 import { useTheme } from "@mui/material/styles";
 import StyledBadge from "../StyledBadge";
-import { toggleSidebar, FetchFriends } from "../../redux/slices/app";
+import { toggleSidebar, FetchFriends, FetchChatGroupArr1 } from "../../redux/slices/app";
 import { useDispatch, useSelector } from "react-redux";
+import axios from "../../utils/axios";
 import {
   FriendComponent,
+  GroupListComponent
 } from "../../components/Friends";
 const style = {
   position: "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 400,
+  width: 500,
   bgcolor: "background.paper",
   boxShadow: 24,
   p: 4,
@@ -37,18 +42,98 @@ const style = {
 
 const FriendsList = ({purpose}) => {
   const dispatch = useDispatch();
+  const [openNoti, setOpenNoti] = React.useState(false);
 
-  const { friends } = useSelector((state) => state.app);
+  const { friends, ChatGroupArr } = useSelector((state) => state.app);
+  const [friendsOutside, setFriendsOutside] = React.useState([])
+  const filterMemberGroup = () => {
+    const groupMemberIds = ChatGroupArr.members.map(member => member._id);
+    const filteredMembers = friends.filter(friend => !groupMemberIds.includes(friend._id));
+    setFriendsOutside(filteredMembers);
+  }
+
+  
+  const handleClick = () => {
+    setOpenNoti(true);
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenNoti(false);
+  };
 
   React.useEffect(() => {
     dispatch(FetchFriends());
   }, []);
 
+ React.useEffect(() => {
+    filterMemberGroup()
+  }, [ChatGroupArr]);
+
+  const addMemberToGroup = async (memberId)  =>  {
+    await axios
+      .put(`/groupchat/`,           
+      {
+        groupId: ChatGroupArr._id,
+        memberId: memberId,
+      }, 
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer `,
+        },
+      })
+      .then((response) => {
+        setOpenNoti(true)
+        console.log("Thêm thành công")
+        dispatch(FetchChatGroupArr1(ChatGroupArr._id))
+        
+      })
+      .catch((error) => {
+        console.log("error :", error);
+      });
+  };
+
   return (
     <>
-      {friends.map((el, idx) => {
+      {friendsOutside.map((el, idx) => {
         // TODO => render UseComponent
-        return <FriendComponent key={el._id} {...el} purpose={purpose} />;
+        return  (
+          <>
+        <Snackbar open={openNoti} autoHideDuration={6000} onClose={handleClose}>
+        <Alert
+          onClose={handleClose}
+          severity="success"
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          Thêm thành viên vào nhóm thành công!
+        </Alert>
+      </Snackbar>
+        <FriendComponent key={el._id} {...el} purpose={purpose} onPressButton={()=>addMemberToGroup(el._id)}/>
+        </>)
+      })}
+    </>
+  );
+};
+
+const GroupList = () => {
+  const dispatch = useDispatch();
+
+  const { ChatGroupArr } = useSelector((state) => state.app);
+
+  React.useEffect(() => {
+    // dispatch(FetchFriends());
+  }, []);
+
+  return (
+    <>
+      {ChatGroupArr.members.map((el, idx) => {
+        // TODO => render UseComponent
+        return <GroupListComponent key={el._id} {...el} />
       })}
     </>
   );
@@ -107,7 +192,7 @@ const Header = () => {
         </Stack>
         <Stack direction={"row"} alignItems={"center"} spacing={3}>
           <IconButton onClick={() => setOpenModalAddGroup(true)}>
-            <UsersThree />
+            <UserCirclePlus  />
           </IconButton>
           <IconButton>
             <MagnifyingGlass />
@@ -131,8 +216,8 @@ const Header = () => {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-          Thêm thành viên
+          <Typography id="modal-modal-title" variant="h6" component="h2" style={{display: 'flex', alignItems: 'center'}}>
+          <UserCirclePlus size={30} style={{marginRight: 10}}/>Thêm thành viên
           </Typography>
           <Box
             component="form"
@@ -150,9 +235,18 @@ const Header = () => {
             />
           </Box>
           <Stack sx={{ height: "100%", marginTop: 5 }}>
-          <Stack spacing={1}>
-            <FriendsList purpose={"addToGroup"}/>;
+          <Stack spacing={1} overflow={'scroll'} height={300}>
+            <FriendsList purpose={"addToGroup"}/>
           </Stack>
+          <Box style={{marginTop: 30}}>
+          <Typography id="modal-modal-title" variant="h6" component="h2" style={{display: 'flex',marginBottom: 20, alignItems: 'center'}}>
+          <Users size={30} style={{marginRight: 10}}/>Thành viên nhóm
+
+          </Typography>
+          <Stack spacing={1} overflow={'scroll'} height={300}>
+            <GroupList />
+          </Stack>
+          </Box>
         </Stack>
           <Box style={{marginTop: 20}}>
           <Stack spacing={2} direction="row" justifyContent={'flex-end'}>

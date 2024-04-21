@@ -25,6 +25,7 @@ import axios from "../../utils/axios";
 import { useDispatch, useSelector } from "react-redux";
 import { XCircle } from "phosphor-react";
 import {
+  FetchChatGroupArr1,
   clearReplyMessage
 } from "../../redux/slices/app";
 const StyledInput = styled(TextField)(({ theme }) => ({
@@ -61,23 +62,24 @@ const ChatInput = ({
       inputElement.focus();
     }, 0);
   };
+  const dispatch = useDispatch();
 
   const user_id = window.localStorage.getItem("user_id");
-  const { ChatGroupArr } = useSelector((state) => state.app);
+  const { ChatGroupArr, reply_message } = useSelector((state) => state.app);
 
   React.useEffect(()=>{
     console.log("mess nè:", messageContent)
   },[messageContent])
 
   const sendMessage = async ()  =>  {
-
       await axios
         .post(`/groupchat/sendMsg`,           
         {
           sender: user_id,
           text: messageContent,
           type: 'Text',
-          groupId: ChatGroupArr._id
+          groupId: ChatGroupArr._id,
+          replyToTxt: reply_message ? reply_message.message : null
         }, 
         {
           headers: {
@@ -88,6 +90,8 @@ const ChatInput = ({
         .then((response) => {
           console.log("send thanh cong")
           setMessageContent("")
+          dispatch(FetchChatGroupArr1(ChatGroupArr._id))
+          dispatch(clearReplyMessage())
         })
         .catch((error) => {
           console.log("error :", error);
