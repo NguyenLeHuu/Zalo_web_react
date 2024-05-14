@@ -6,8 +6,11 @@ import FormProvider from "../../components/hook-form/FormProvider";
 import { yupResolver } from "@hookform/resolvers/yup";
 import RHFTextField from "../../components/hook-form/RHFTextField";
 import axios from "../../utils/axios";
-
+import { useDispatch, useSelector } from "react-redux";
+import { FetchProfile } from "../../redux/slices/app";
 const ProfileForm1 = ({ profile }) => {
+  const dispatch = useDispatch();
+
   //   console.log("profile", profile);
   const ProfileSchema = Yup.object().shape({
     firstName: Yup.string().required("First Name is required"),
@@ -32,6 +35,22 @@ const ProfileForm1 = ({ profile }) => {
   const onSubmit = async (data) => {
     try {
       //submit data backend
+      await axios.put("/users/update-me", 
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer `,
+          },
+        }
+      ) 
+      .then((response) => {
+        console.log("Update profile success:", response)
+        dispatch(FetchProfile());
+      })
+      .catch((error) => {
+        console.log("error :", error);
+      });
       console.log(data);
     } catch (error) {
       console.log(error);
@@ -78,6 +97,7 @@ const ProfileForm1 = ({ profile }) => {
           name="creaateAt"
           label="Created At"
           placeholder="Vui lòng nhập chính xác"
+          disabled
         />
         <Stack direction={"row"} justifyContent={"end"}>
           <Button color="primary" size="large" type="submit" variant="outlined">
