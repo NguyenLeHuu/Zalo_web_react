@@ -28,6 +28,10 @@ import {
   FetchChatGroupArr1,
   clearReplyMessage
 } from "../../redux/slices/app";
+// import io from "socket.io-client";
+// const socket = io("http://localhost:3001");
+import connectToSocket from "../../socketClient";
+const socket = connectToSocket();
 const StyledInput = styled(TextField)(({ theme }) => ({
   "& .MuiInputBase-input": {
     // padingTop: "12px !important",
@@ -90,8 +94,9 @@ const ChatInput = ({
         .then((response) => {
           console.log("send thanh cong")
           setMessageContent("")
-          dispatch(FetchChatGroupArr1(ChatGroupArr._id))
+          // dispatch(FetchChatGroupArr1(ChatGroupArr._id))
           dispatch(clearReplyMessage())
+          socket.emit("client-sent-message-group", {groupId: ChatGroupArr._id})
         })
         .catch((error) => {
           console.log("error :", error);

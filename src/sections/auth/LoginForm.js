@@ -29,8 +29,8 @@ const LoginForm = () => {
   });
 
   const defaultValues = {
-    email: "doanthanhhao0204@gmail.com",
-    password: "02042002",
+    email: "doanthanhhao02041@gmail.com",
+    password: "123456",
   };
   const methods = useForm({
     resolver: yupResolver(LoginSchema),

@@ -18,7 +18,7 @@ import {
 } from "../../components/Search";
 import ChatElement from "../../components/ChatElement";
 import Friends from "../../sections/main/Friends";
-import { socket } from "../../socket";
+// import { socket } from "../../socket";
 import {
   FetchFriends,
   FetchGroups,
@@ -30,8 +30,12 @@ import {
 import Message from "../../components/Conversation/Message";
 import axios from "../../utils/axios";
 import { useSelector, useDispatch } from "react-redux";
-
+// import io from "socket.io-client";
+// const socket = io("http://localhost:3001");
+import connectToSocket from "../../socketClient";
+const socket = connectToSocket();
 const user_id = window.localStorage.getItem("user_id");
+
 
 const style = {
   position: "absolute",
@@ -62,11 +66,11 @@ const Chats = () => {
 
   const { friends, groups } = useSelector((state) => state.app);
   console.log("gourp", groups);
-  useEffect(() => {
-    socket.emit("get_direct_conversations", { user_id }, (data) => {
-      // data => list of converssations
-    });
-  }, []);
+  // useEffect(() => {
+  //   socket.emit("get_direct_conversations", { user_id }, (data) => {
+  //     // data => list of converssations
+  //   });
+  // }, []);
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
@@ -79,6 +83,7 @@ const Chats = () => {
     dispatch(FetchChatGroupArr1(group._id));
     dispatch(SelectConversation({ room_id: group._id }))
     dispatch(clearReplyMessage())
+    socket.emit("join-group-chat", { groupId: group._id })
   };
 
   const addNewGroup = async ()  =>  {
@@ -98,7 +103,7 @@ const Chats = () => {
         console.log("Thêm group mới thành công")
         setTextAddGroup("")
         setOpenModalAddGroup(false);
-        dispatch(FetchGroups());
+        // dispatch(FetchGroups());
       })
       .catch((error) => {
         console.log("error :", error);

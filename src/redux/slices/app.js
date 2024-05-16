@@ -40,6 +40,12 @@ const slice = createSlice({
     updateChatGroupArr(state, action) {
       state.ChatGroupArr = action.payload.ChatGroupArr;
     },
+    clearChatGroupArr(state, action) {
+      state.ChatGroupArr = [];
+    },
+    clearRoomId(state, action) {
+      state.room_id = null;
+    },
     toggleSidebar(state, action) {
       state.sidebar.open = !state.sidebar.open;
     },
@@ -107,6 +113,18 @@ export const clearReplyMessage = () => {
     dispatch(slice.actions.sendReplyMessage(""));
   };
 };
+
+export const clearChatGroupArr = () => {
+  return async (dispatch, getState) => {
+    dispatch(slice.actions.clearChatGroupArr());
+  };
+};
+export const clearRoomId = () => {
+  return async (dispatch, getState) => {
+    dispatch(slice.actions.clearRoomId());
+  };
+};
+
 export const showSnackbar =
   ({ severity, message }) =>
   async (dispatch, getState) => {

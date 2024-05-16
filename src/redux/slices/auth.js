@@ -1,8 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 import axios from "../../utils/axios";
-
 import { showSnackbar } from "./app";
+import { clearRoomId } from "./app";
+// import io from "socket.io-client";
+// const socket = io("http://localhost:3001");
+import connectToSocket from "../../socketClient";
+const socket = connectToSocket();
 
 const initialState = {
   isLoggedIn: false,
@@ -59,6 +63,8 @@ export function LoginUser(formValues) {
           })
         );
         window.localStorage.setItem("user_id", response.data.user_id);
+        socket.emit("login", { user_id: response.data.user_id});
+        console.log("Socket nè", socket.id)
         dispatch(
           showSnackbar({
             severity: "success",
@@ -83,6 +89,7 @@ export function LogoutUser() {
   return async (dispatch, getState) => {
     window.localStorage.removeItem("user_id");
     dispatch(slice.actions.signOut());
+    dispatch(clearRoomId()); 
   };
 }
 

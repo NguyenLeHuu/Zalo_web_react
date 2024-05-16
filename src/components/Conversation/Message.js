@@ -2,13 +2,14 @@ import { Box, Stack, Typography, Avatar, IconButton } from "@mui/material";
 import React, { useEffect } from "react";
 import {
   FetchChatArr,
-  FetchChatGroupArr,
+  FetchChatGroupArr1,
   removeMessage,
   sendReplyMessage,
 } from "../../redux/slices/app";
 import { useDispatch, useSelector } from "react-redux";
 import { ArrowArcRight, Trash } from "phosphor-react";
-
+import connectToSocket from "../../socketClient";
+const socket = connectToSocket();
 const Message = ({ menu }) => {
   const dispatch = useDispatch();
 
@@ -18,9 +19,16 @@ const Message = ({ menu }) => {
   const { ChatArr, ChatGroupArr } = useSelector((state) => state.app);
 
   useEffect(() => {
-    dispatch(FetchChatArr());
+    // dispatch(FetchChatArr());
     // dispatch(FetchChatGroupArr());
   }, [dispatch]);
+
+  useEffect(() => {
+    socket.on("server-sent-message-group", (data) => {
+      console.log("send message group ♥: ", data);
+      dispatch(FetchChatGroupArr1(data.groupId))
+    });
+  }, []);
 
   useEffect(() => {
     console.log("Tin nhắn group :", ChatGroupArr);
@@ -133,11 +141,11 @@ const Message = ({ menu }) => {
                 <Box>
                 {!isSentByUser &&
                   <Box style={{marginBottom: 5}}>
-                    {ChatGroupArr.members.map((item)=> 
+                    {ChatGroupArr.members.map((item,index1)=> 
                     {
                       if (item._id === el.sender) {
                         return (
-                          <span key={index}>
+                          <span key={index1}>
                             {item.firstName} {item.lastName}
                           </span>
                         );
